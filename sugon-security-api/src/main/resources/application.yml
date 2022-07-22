@@ -1,0 +1,23 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  profiles:
+    active: dev
+  application:
+    name: sugon-security-api
+  security:
+    user:
+      name: admin
+      password: admin
+
+security:
+  oauth2:
+    client:
+      client-id: first-client
+      client-secret: noonewilleverguess
+swagger:
+  title: 接口文档
+  description: 接口文档
+  version: 1.0-SNAPSHOT.0
+  basePackage: com.sugon.cloud

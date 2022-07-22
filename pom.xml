@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+<!--
+    <parent>
+        <groupId>com.sugon.cloud</groupId>
+        <artifactId>btjy-public</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>-->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.1</version>
+    </parent>
+
+
+    <artifactId>sugon-security</artifactId>
+
+    <groupId>com.sugon.cloud</groupId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>sugon-security-api</module>
+        <module>sugon-security-common</module>
+        <module>sugon-security-client</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <sugoncloud-common.version>1.0.0-SNAPSHOT</sugoncloud-common.version>
+        <mybatis.version>2.1.4</mybatis.version>
+    </properties>
+
+    <dependencyManagement>
+
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2021.0.3 </version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--<dependency>
+                <groupId>com.sugon.cloud</groupId>
+                <artifactId>sugoncloud-common</artifactId>
+                <version>${sugoncloud-common.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>spring-cloud-starter-openfeign</artifactId>
+                        <groupId>org.springframework.cloud</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.github.pagehelper</groupId>
+                        <artifactId>pagehelper</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.mybatis.spring.boot</groupId>
+                        <artifactId>mybatis-spring-boot-starter</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.baomidou</groupId>
+                        <artifactId>mybatis-plus-extension</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>-->
+            <!-- https://mvnrepository.com/artifact/com.spring4all/swagger-spring-boot-starter -->
+            <dependency>
+                <groupId>com.spring4all</groupId>
+                <artifactId>swagger-spring-boot-starter</artifactId>
+                <version>2.0.2.RELEASE</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/io.springfox/springfox-boot-starter -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+
+
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>6.0.6</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>1.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>1.1.20</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>2.7.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>1.2.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.spring4all</groupId>
+                <artifactId>swagger-spring-boot-starter</artifactId>
+                <version>2.0.2.RELEASE</version>
+            </dependency>
+
+
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>sugoncloud-public</id>
+            <url>http://172.22.5.34:9996/repository/sugoncloud-public/</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+            <releases>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+        </repository>
+    </repositories>
+
+<distributionManagement>
+        <repository>
+            <id>sugoncloud-releases</id>
+            <name>Sugoncloud Release Repository</name>
+            <url>http://172.22.5.34:9996/repository/sugoncloud-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>sugoncloud-snapshots</id>
+            <name>Sugoncloud Snapshot Repository</name>
+            <url>http://172.22.5.34:9996/repository/sugoncloud-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-archetype-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
