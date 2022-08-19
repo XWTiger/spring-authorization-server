@@ -29,8 +29,11 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <sugoncloud-common.version>1.0.0-SNAPSHOT</sugoncloud-common.version>
+        <sugoncloud-common.version>1.0.1-btjy.RELEASE</sugoncloud-common.version>
         <mybatis.version>2.1.4</mybatis.version>
+        <es.version>7.16.2</es.version>
+        <mybatis-plus.version>3.4.0</mybatis-plus.version>
+
     </properties>
 
     <dependencyManagement>
@@ -44,7 +47,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!--<dependency>
+            <dependency>
                 <groupId>com.sugon.cloud</groupId>
                 <artifactId>sugoncloud-common</artifactId>
                 <version>${sugoncloud-common.version}</version>
@@ -66,7 +69,7 @@
                         <artifactId>mybatis-plus-extension</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>-->
+            </dependency>
             <!-- https://mvnrepository.com/artifact/com.spring4all/swagger-spring-boot-starter -->
             <dependency>
                 <groupId>com.spring4all</groupId>
