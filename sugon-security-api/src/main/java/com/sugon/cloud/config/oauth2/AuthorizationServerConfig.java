@@ -5,9 +5,14 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.sugon.cloud.service.impl.Oauth2ClientService;
+import com.sugon.cloud.service.impl.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -55,31 +60,34 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Configuration
-@Order(1)
+/*@DependsOn("oauth2ClientService")*/
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthorizationServerConfig {
     private static final String UNIQUE_CLIENT_ID = "ec3898c5-7d13-40ec-8f67-24d3d34b891a";
     private static final String AUTHORITIES_CLAIM = "authorities";
 
 
+   /* private UserDetailsServiceImpl userDetailsServiceImpl;
+    private Oauth2ClientService oauth2ClientService;*/
 
-    @Bean
+   /* @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
         httpSecurity
                 // Redirect to the login page when not authenticated from the
                 // authorization endpoint
-
+                .csrf().disable()
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(
                                 new LoginUrlAuthenticationEntryPoint("/login"))
                 );
 
         return httpSecurity.build();
-    }
+    }*/
 
 
-    @Bean
+   /* @Bean
     @Order(3)
     public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -92,17 +100,17 @@ public class AuthorizationServerConfig {
                 .formLogin(Customizer.withDefaults());
 
         return http.build();
-    }
+    }*/
 
 
 
 
 
 
-    @Bean
+  /*  @Bean
     public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
         // @formatter:off
-        RegisteredClient loginClient = RegisteredClient.withId(UUID.randomUUID().toString())
+       *//* RegisteredClient loginClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("login-client")
                 .clientSecret(passwordEncoder().encode("openid-connect"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
@@ -115,29 +123,12 @@ public class AuthorizationServerConfig {
                 .scope(OidcScopes.PROFILE)
                 .tokenSettings(TokenSettings.builder().build())
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-                .build();
-       /* RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("messaging-client")
-                .clientSecret("{noop}secret")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .scope("message:read")
-                .scope("message:write")
-                .build();*/
-
-        RegisteredClient tigerClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("tiger-client")
-                .clientSecret("{noop}asecret")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-                .authorizationGrantType(AuthorizationGrantType.PASSWORD)
-                .scope("message:read")
-                .scope("message:write")
-                .build();
+                .build();*//*
         // @formatter:on
         JdbcRegisteredClientRepository clientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
         return clientRepository;
     }
-
+*/
     @Bean
     public JWKSource<SecurityContext> jwkSource(KeyPair keyPair) {
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
@@ -168,24 +159,24 @@ public class AuthorizationServerConfig {
         return ProviderSettings.builder().issuer("http://localhost:8090").build();
     }
 
-    /**
+  /*  *//**
      *
      * @return
-     */
+     *//*
     @Bean
     public UserDetailsService userDetailsService() {
         // @formatter:off
         UserDetails userDetails = User.builder()
                 .passwordEncoder(passwordEncoder()::encode)
                 .username("admin")
-                .password("strongboynevercry#@!")
+                .password("admin")
                 .roles("USER","ADMIN")
                 .build();
         // @formatter:on
 
         return new InMemoryUserDetailsManager(userDetails);
     }
-
+*/
     @Bean
     @SuppressWarnings("unused")
     public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -225,21 +216,23 @@ public class AuthorizationServerConfig {
 
     @Bean
     @SuppressWarnings("unused")
-    public ClientSecretAuthenticationProvider oauthClientAuthProvider(RegisteredClientRepository registeredClientRepository, OAuth2AuthorizationService oAuth2AuthorizationService) {
-        ClientSecretAuthenticationProvider clientAuthenticationProvider =
+    public SugonClientSecretProvider oauthClientAuthProvider(Oauth2ClientService oauth2ClientService, OAuth2AuthorizationService oAuth2AuthorizationService) {
+        /*ClientSecretAuthenticationProvider clientAuthenticationProvider =
                 new ClientSecretAuthenticationProvider(
-                        registeredClientRepository,
+                        oauth2ClientService,
                         oAuth2AuthorizationService);
         clientAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return clientAuthenticationProvider;
+        return clientAuthenticationProvider;*/
+        SugonClientSecretProvider sugonClientSecretProvider = new SugonClientSecretProvider(oauth2ClientService, passwordEncoder());
+        return sugonClientSecretProvider;
     }
 
     @Bean
     @SuppressWarnings("unused")
-    public DaoAuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+    public DaoAuthenticationProvider authenticationProvider(UserDetailsServiceImpl userDetailsServiceImpl) {
         DaoAuthenticationProvider authProvider
                 = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setUserDetailsService(userDetailsServiceImpl);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

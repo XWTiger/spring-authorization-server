@@ -15,10 +15,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
-import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
 
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
@@ -33,13 +29,16 @@ import java.util.Set;
 public class Oauth2ClientEntity {
 
     @ApiModelProperty(hidden = true)
-    @TableField(exist = false)
+
     private String id;
     @ApiModelProperty("客户端id")
     @NotNull(message = "客户端id不能位空")
     private String clientId;
 
     @ApiModelProperty(value = "分发时间", hidden = true)
+
+    @JsonDeserialize(using = JsonInstantDeserializer.class)
+    @JsonSerialize(using = JsonInstantSerializer.class)
     private Instant clientIdIssuedAt;
 
     @ApiModelProperty("客户端密码")
@@ -47,21 +46,35 @@ public class Oauth2ClientEntity {
     private String clientSecret;
 
     @ApiModelProperty("过期时间，时间戳13位（）")
-    @JsonDeserialize(using = JsonInstantDeserializer.class)
-    @JsonSerialize(using = JsonInstantSerializer.class)
     private Instant clientSecretExpiresAt;
 
     @ApiModelProperty("客户端名称")
     private String clientName;
-    private  Set<ClientAuthenticationMethodEnum> clientAuthenticationMethods = new HashSet();
-    private  Set<AuthorizationGrantTypeEnum> authorizationGrantTypes = new HashSet();
-    private  Set<String> redirectUris = new HashSet();
+    @TableField(exist = false)
+    private  Set<ClientAuthenticationMethodEnum> clientAuthenticationMethod = new HashSet<ClientAuthenticationMethodEnum>();
+    @TableField(exist = false)
+    private  Set<AuthorizationGrantTypeEnum> authorizationGrantType = new HashSet<AuthorizationGrantTypeEnum>();
+    @TableField(exist = false)
+    private  Set<String> redirectUri = new HashSet();
 
+    @ApiModelProperty(hidden = true)
+    private String clientAuthenticationMethods;
+
+    @ApiModelProperty(hidden = true)
+    private String authorizationGrantTypes;
+
+    @ApiModelProperty(hidden = true)
+    private String redirectUris;
+
+    @TableField(exist = false)
     @ApiModelProperty("范围 eg: message:read,message:write")
-    private  Set<String> scopes = new HashSet();
+    private  Set<String> scope = new HashSet();
+
+    private String scopes;
+
 
     @ApiModelProperty("类型")
-    private ClientTypeEnum typeEnum;
+    private ClientTypeEnum type;
 
     //we will user client settings  or token settings
 }

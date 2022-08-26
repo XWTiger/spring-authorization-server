@@ -47,29 +47,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>com.sugon.cloud</groupId>
-                <artifactId>sugoncloud-common</artifactId>
-                <version>${sugoncloud-common.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>spring-cloud-starter-openfeign</artifactId>
-                        <groupId>org.springframework.cloud</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.github.pagehelper</groupId>
-                        <artifactId>pagehelper</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.mybatis.spring.boot</groupId>
-                        <artifactId>mybatis-spring-boot-starter</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.baomidou</groupId>
-                        <artifactId>mybatis-plus-extension</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+
             <!-- https://mvnrepository.com/artifact/com.spring4all/swagger-spring-boot-starter -->
             <dependency>
                 <groupId>com.spring4all</groupId>

@@ -1,6 +1,6 @@
 <configuration>
 
-    <property name="LOG_DIR" value="/app/logs/" />
+    <property name="LOG_DIR" value="/app/logs" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -8,54 +8,70 @@
         </encoder>
     </appender>
 
-    <appender name="APP" class="ch.qos.logback.core.RollingFileAppender">
-        <file>${LOG_DIR}/${appName}-app.log</file>
-        <!--SizeAndTimeBasedRollingPolicy策略继承了TimeBasedRollingPolicy策略-->
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!--每天生成一个文件 %i表示序号 从0开始-->
-            <fileNamePattern>${LOG_DIR}/${appName}-app-%d{yyyy-MM-dd}.log.%i</fileNamePattern>
-            <!--每个文件的大小限制-->
-            <MaxFileSize>100MB</MaxFileSize>
-            <!--最多保留10天的文件，10天之前的将被清除-->
-            <MaxHistory>10</MaxHistory>
-            <!--该滚动策略日志的总大小，超过的日志会被清除-->
-            <totalSizeCap>2GB</totalSizeCap>
-            <!--启动时清理日志文件  此项置灰清理超过保留天数的  也会清理超过总大小的-->
-            <cleanHistoryOnStart>true</cleanHistoryOnStart>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [%X{TRACE_ID}] %msg%n</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
+ <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+     <file>${LOG_DIR}/authorization-app.log</file>
+     <!--SizeAndTimeBasedRollingPolicy策略继承了TimeBasedRollingPolicy策略-->
+     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+         <!--每天生成一个文件 %i表示序号 从0开始-->
+         <fileNamePattern>${LOG_DIR}/authorization-app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+         <!--每个文件的大小限制-->
+         <MaxFileSize>100MB</MaxFileSize>
+         <!--最多保留10天的文件，10天之前的将被清除-->
+         <MaxHistory>10</MaxHistory>
+         <!--该滚动策略日志的总大小，超过的日志会被清除-->
+         <totalSizeCap>2GB</totalSizeCap>
+         <!--启动时清理日志文件  此项置灰清理超过保留天数的  也会清理超过总大小的-->
+         <cleanHistoryOnStart>true</cleanHistoryOnStart>
+     </rollingPolicy>
+     <encoder>
+         <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} %line - %msg%n</pattern>
+         <charset>UTF-8</charset>
+     </encoder>
     </appender>
+    <!--
 
-    <appender name="AUTH_SERVER" class="ch.qos.logback.core.RollingFileAppender">
-        <file>${LOG_DIR}/${appName}-auth_server.log</file>
-        <!--SizeAndTimeBasedRollingPolicy策略继承了TimeBasedRollingPolicy策略-->
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!--每天生成一个文件 %i表示序号 从0开始-->
-            <fileNamePattern>${LOG_DIR}/${appName}-auth_server-%d{yyyy-MM-dd}.log.%i</fileNamePattern>
-            <!--每个文件的大小限制-->
-            <MaxFileSize>100MB</MaxFileSize>
-            <!--最多保留10天的文件，10天之前的将被清除-->
-            <MaxHistory>10</MaxHistory>
-            <!--该滚动策略日志的总大小，超过的日志会被清除-->
-            <totalSizeCap>2GB</totalSizeCap>
-            <!--启动时清理日志文件  此项置灰清理超过保留天数的  也会清理超过总大小的-->
-            <cleanHistoryOnStart>true</cleanHistoryOnStart>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [%X{TRACE_ID}] %msg%n</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-    </appender>
+  <appender name="AUTH_SERVER" class="ch.qos.logback.core.RollingFileAppender">
+      &lt;!&ndash;<file>${LOG_DIR}/${appName}-auth-server.log</file>&ndash;&gt;
 
-    <root level="debug">
+      &lt;!&ndash;SizeAndTimeBasedRollingPolicy策略继承了TimeBasedRollingPolicy策略&ndash;&gt;
+     &lt;!&ndash; <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+          &lt;!&ndash;每天生成一个文件 %i表示序号 从0开始&ndash;&gt;
+          <fileNamePattern>${LOG_DIR}/${appName}-auth-server-%d{yyyy-MM-dd}.log.%i</fileNamePattern>
+          &lt;!&ndash;每个文件的大小限制&ndash;&gt;
+          <MaxFileSize>100MB</MaxFileSize>
+          &lt;!&ndash;最多保留10天的文件，10天之前的将被清除&ndash;&gt;
+          <MaxHistory>10</MaxHistory>
+          &lt;!&ndash;该滚动策略日志的总大小，超过的日志会被清除&ndash;&gt;
+          <totalSizeCap>2GB</totalSizeCap>
+          &lt;!&ndash;启动时清理日志文件  此项置灰清理超过保留天数的  也会清理超过总大小的&ndash;&gt;
+          <cleanHistoryOnStart>true</cleanHistoryOnStart>
+      </rollingPolicy>&ndash;&gt;
+    &lt;!&ndash;  <encoder>
+          <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [%X{TRACE_ID}] %msg%n</pattern>
+          <charset>UTF-8</charset>
+      </encoder>&ndash;&gt;
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+          &lt;!&ndash;日志文件输出的文件名&ndash;&gt;
+          <FileNamePattern>${LOG_DIR}/auth-server-%d{yyyy-MM-dd}.log.%i</FileNamePattern>
+          &lt;!&ndash;日志文件保留天数&ndash;&gt;
+          <MaxHistory>30</MaxHistory>
+      </rollingPolicy>
+      <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+          &lt;!&ndash;格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符&ndash;&gt;
+          <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+      </encoder>
+      &lt;!&ndash;日志文件最大的大小&ndash;&gt;
+      <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+          <MaxFileSize>10MB</MaxFileSize>
+      </triggeringPolicy>
+  </appender>-->
+
+    <root level="DEBUG">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="APP" />
     </root>
 
-    <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="debug" additivity="false">
+  <!--  <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="debug" additivity="false">
         <appender-ref ref="AUTH_SERVER"/>
         <appender-ref ref="STDOUT"/>
     </logger>
@@ -78,6 +94,6 @@
     <logger name="org.springframework.security.oauth2" level="TRACE" additivity="false">
         <appender-ref ref="AUTH_SERVER"/>
         <appender-ref ref="STDOUT"/>
-    </logger>
+    </logger>-->
 
 </configuration>

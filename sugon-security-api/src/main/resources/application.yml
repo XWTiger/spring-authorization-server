@@ -1,4 +1,19 @@
+
+mybatis:
+  config-locations: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath*:mybatis/mapper/*.xml,classpath*:mybatis/mapper/**/*.xml
+  type-aliases-package: com.sugon.cloud.entity
+# mybatis_config
+mybatis-plus:
+  config-locations: classpath:mybatis/mybatis-config.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:mybatis/mapper/*.xml,classpath*:mybatis/mapper/**/*.xml
 spring:
+  flyway:
+    table: flyway_schema_auth_history
+    baseline-on-migrate: true
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -60,18 +75,18 @@ server:
       # spring boot 没有抽象的 undertow 相关配置在这里配置，对应 io.undertow.UndertowOptions 类
       server:
         ALLOW_UNKNOWN_PROTOCOLS: false
-logging:
-  level:
-    com.example.logbackdemo: debug # 指定包下日志以debug级别输出
-    #root: warn # root日志以warn级别输出，不要用debug级别！！---会卡的！
-#  config: resource/logback.xml
 security:
   oauth2:
     client:
       client-id: first-client
       client-secret: noonewilleverguess
+springdoc:
+  swagger-ui:
+    csrf:
+      enabled: true
 swagger:
   title: 接口文档
   description: 接口文档
-  version: 1.0-SNAPSHOT.0
+  version: 1.0-SNAPSHOT
   basePackage: com.sugon.cloud
+

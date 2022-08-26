@@ -11,4 +11,25 @@ public enum ClientAuthenticationMethodEnum {
     ClientAuthenticationMethodEnum(String value) {
         this.value = value;
     }
+
+    public static ClientAuthenticationMethodEnum getByValue(String value) {
+
+        if (CLIENT_SECRET_BASIC.value.equals(value)) {
+            return CLIENT_SECRET_BASIC;
+        }
+        if (CLIENT_SECRET_POST.value.equals(value)) {
+            return CLIENT_SECRET_POST;
+        }
+        if (CLIENT_SECRET_JWT.value.equals(value)) {
+            return CLIENT_SECRET_JWT;
+        }
+        if (PRIVATE_KEY_JWT.value.equals(value)) {
+            return PRIVATE_KEY_JWT;
+        }
+        if (NONE.value.equals(value)) {
+            return NONE;
+        }
+        return null;
+
+    }
 }

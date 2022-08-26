@@ -1,6 +1,9 @@
 package com.sugon.cloud.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sugon.cloud.common.ResultModel;
 import com.sugon.cloud.service.impl.AuthService;
+import com.sugon.cloud.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
@@ -16,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
 /**
  * @author ti'ge'r
@@ -42,7 +47,22 @@ public class PasswordGrantFilter extends OncePerRequestFilter {
          return;
       }
 
-      byte[] entity = authService.getAccessTokenForRequest(request).getBytes(StandardCharsets.UTF_8);
+      byte[] entity = new byte[0];
+      try {
+         entity = authService.getAccessTokenForRequest(request).getBytes(StandardCharsets.UTF_8);
+      } catch (Exception e) {
+         e.printStackTrace();
+         response.setStatus(SC_UNAUTHORIZED);
+         response.setContentType("application/json");
+         ResultModel result;
+
+         if (CommonUtils.isContainChinese(e.getMessage())) {
+            result = ResultModel.error(e.getMessage());
+         } else {
+            result = ResultModel.error("认证失败, 请联系管理员!");
+         }
+         response.getOutputStream().write(new ObjectMapper().writer().writeValueAsBytes(result));
+      }
       response.getOutputStream().write(entity);
       response.setContentType("application/json");
    }

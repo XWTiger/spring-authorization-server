@@ -17,7 +17,26 @@ public enum AuthorizationGrantTypeEnum {
 
     public String value;
 
-    AuthorizationGrantTypeEnum(String value) {
+    private AuthorizationGrantTypeEnum(String value) {
         this.value = value;
+    }
+
+    public static AuthorizationGrantTypeEnum getByValue(String value) {
+        if (IMPLICIT.value.equals(value)) {
+            return IMPLICIT;
+        }
+        if (REFRESH_TOKEN.value.equals(value)) {
+            return REFRESH_TOKEN;
+        }
+        if (CLIENT_CREDENTIALS.value.equals(value)) {
+            return CLIENT_CREDENTIALS;
+        }
+        if (PASSWORD.value.equals(value)) {
+            return PASSWORD;
+        }
+        if (JWT_BEARER.value.equals(value)) {
+            return JWT_BEARER;
+        }
+        return null;
     }
 }

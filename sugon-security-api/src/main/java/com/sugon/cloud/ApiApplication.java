@@ -1,13 +1,21 @@
 package com.sugon.cloud;
 
+import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import javax.activation.DataSource;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -18,8 +26,8 @@ import java.net.UnknownHostException;
  */
 @Slf4j
 @EnableSwagger2
-
 @SpringBootApplication
+@MapperScan(basePackages = {"com.sugon.cloud.mapper"})
 public class ApiApplication {
 
     public static void main(String[] args) throws UnknownHostException {
@@ -38,6 +46,8 @@ public class ApiApplication {
                 appName, hosts, port, contextPath, path, hosts, port, contextPath, path
         );
     }
+
+
 
 
 

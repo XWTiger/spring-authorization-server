@@ -8,6 +8,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationToken;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -56,6 +58,7 @@ public class AuthorizationFilterConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/oauth/token").permitAll()
+                .antMatchers("/api/oauth2/client").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
@@ -66,10 +69,30 @@ public class AuthorizationFilterConfig {
                 )
                 .and()
                 .addFilterBefore(passwordGrantFilter, AbstractPreAuthenticatedProcessingFilter.class)
+
                 .exceptionHandling(exceptions ->
                         exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                 );
 
         return http.build();
+    }
+
+   @Bean
+    @Order(1)
+    public SecurityFilterChain whiteList(HttpSecurity http) throws Exception {
+
+        return http
+                .authorizeRequests()
+                .antMatchers("/api/salt").permitAll()
+                .and()
+                .csrf()
+                .disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .invalidSessionUrl("/api/salt")
+                .and()
+                .build()
+
+         ;
+
     }
 }

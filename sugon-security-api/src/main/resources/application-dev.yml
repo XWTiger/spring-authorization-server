@@ -52,3 +52,17 @@ spring:
         wall:
           config:
             multi-statement-allow: true
+  redis:
+    host: 10.110.227.58
+    port: 42491
+    password:
+    database: 0
+    lettuce:
+      pool:
+        max-active: 32
+        max-wait: 300ms
+        max-idle: 16
+        min-idle: 8
+authorization:
+  token-expire: 1800 #单位秒
+  user-lock-time: 600 #单位秒

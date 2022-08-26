@@ -12,6 +12,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <flyway.version>7.15.0</flyway.version>
     </properties>
 
     <dependencies>
@@ -37,11 +38,19 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>${mybatis.version}</version>
         </dependency>
-      <!--  <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.slf4j/jul-to-slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+
+        <!--  <dependency>
+              <groupId>com.github.pagehelper</groupId>
+              <artifactId>pagehelper-spring-boot-starter</artifactId>
+          </dependency>-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
@@ -87,6 +96,12 @@
             <artifactId>spring-security-config</artifactId>
             <version>5.7.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
+        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-core -->
         <dependency>
@@ -113,10 +128,7 @@
             <version>5.7.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.sugon.cloud</groupId>
-            <artifactId>sugoncloud-common</artifactId>
-        </dependency>
+
 
 
 
@@ -144,6 +156,11 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>${mybatis-plus.version}</version>
         </dependency>
 
