@@ -5,6 +5,7 @@ import com.sugon.cloud.config.oauth2.SugonClientSecretProvider;
 import com.sugon.cloud.entity.AuthResult;
 import com.sugon.cloud.entity.Oauth2ClientEntity;
 import com.sugon.cloud.entity.RamUserEntity;
+import com.sugon.cloud.service.PhoneCodeService;
 import com.sugon.cloud.utils.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +15,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.authentication.ClientSecretAuthenticationProvider;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeRequestAuthenticationProvider;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
@@ -32,6 +31,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -49,6 +49,8 @@ public class AuthService {
    private final ObjectMapper objectMapper;
    private final RedisTemplate redisTemplate;
    private final UserDetailsServiceImpl userDetailsService;
+
+   private final PhoneCodeService phoneCodeService;
 
    private final int FAILED_TIMES = 10;
    private final static String USER_NAME = "comments";
@@ -71,7 +73,9 @@ public class AuthService {
         /* ClientSecretAuthenticationProvider clientSecretAuthenticationProvider,*/
          SugonClientSecretProvider sugonClientSecretProvider,
          OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator,
-          RedisTemplate redisTemplate,UserDetailsServiceImpl userDetailsService) {
+          RedisTemplate redisTemplate,UserDetailsServiceImpl userDetailsService,
+         @Nullable  PhoneCodeService phoneCodeService
+         ) {
 
       this.authenticationManager = authenticationManager;
       this.oAuth2AuthorizationCodeRequestAuthenticationProvider = new OAuth2AuthorizationCodeRequestAuthenticationProvider(registeredClientRepository, authorizationService, authorizationConsentService);
@@ -83,55 +87,66 @@ public class AuthService {
       this.objectMapper = new ObjectMapper();
       this.redisTemplate = redisTemplate;
       this.userDetailsService = userDetailsService;
+      this.phoneCodeService = phoneCodeService;
    }
 
    public String getAccessTokenForRequest(HttpServletRequest request) throws Exception {
-      String userName = request.getParameter("username");
-      Assert.notNull(userName, "账号不能为空");
-
-      //判断是否被锁定
-      String lockedUser = UserDetailsServiceImpl.LOCKED_HEADER + userName;
-      if (redisTemplate.hasKey(lockedUser)) {
-         Integer locked = (Integer) redisTemplate.opsForValue().get(lockedUser);
-         if (locked >= FAILED_TIMES) {
-            throw new Exception("用户名或者密码错误过多，" + expire/60 + "分钟后再试");
-         }
-      }
-      String passwordInBase64 = request.getParameter("password");
-      Assert.hasText(passwordInBase64, "密码不能为空");
-
-      //秘钥解密
-      String publicKey = request.getParameter("publicKey");
-      if (org.apache.commons.lang3.StringUtils.isEmpty(publicKey)) {
-         throw new Exception("缺少公钥");
-      }
-      String specialKey = userName;
-
-      RamUserEntity userEntity;
+      RamUserEntity userEntity = null;
       Authentication principal = null;
-      try {
-         userEntity =  userDetailsService.loadUserByUserName(userName);
-         String specialValue = decrypt(publicKey, passwordInBase64);
-         if (Objects.isNull(userEntity)) {
-            throw new Exception("用户已经不存在");
+
+      //添加手机校验码逻辑
+      if (!Objects.isNull(phoneCodeService)) {
+         if (!phoneCodeService.checkPhoneCode(request)) {
+            throw  new Exception("手机验证码错误");
          }
+      } else {
+         // 密码验证
+         String userName = request.getParameter("username");
+         Assert.notNull(userName, "账号不能为空");
 
-
-         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(specialKey, specialValue);
-         principal = authenticationManager.authenticate(authRequest);
-
-
-      } catch (Exception e) {
-         e.printStackTrace();
-         // 如果验证失败10次 锁 10分钟
-         if (StringUtils.hasLength(userName)) {
-            if (redisTemplate.hasKey(lockedUser)) {
-               redisTemplate.opsForValue().increment(lockedUser);
-            } else {
-               redisTemplate.opsForValue().set(lockedUser, 1, lockTime, TimeUnit.SECONDS);
+         //判断是否被锁定
+         String lockedUser = UserDetailsServiceImpl.LOCKED_HEADER + userName;
+         if (redisTemplate.hasKey(lockedUser)) {
+            Integer locked = (Integer) redisTemplate.opsForValue().get(lockedUser);
+            if (locked >= FAILED_TIMES) {
+               throw new Exception("用户名或者密码错误过多，" + expire / 60 + "分钟后再试");
             }
          }
-         throw e;
+         String passwordInBase64 = request.getParameter("password");
+         Assert.hasText(passwordInBase64, "密码不能为空");
+
+         //秘钥解密
+         String publicKey = request.getParameter("publicKey");
+         if (org.apache.commons.lang3.StringUtils.isEmpty(publicKey)) {
+            throw new Exception("缺少公钥");
+         }
+         String specialKey = userName;
+
+
+         try {
+            userEntity = userDetailsService.loadUserByUserName(userName);
+            String specialValue = decrypt(publicKey, passwordInBase64);
+            if (Objects.isNull(userEntity)) {
+               throw new Exception("用户已经不存在");
+            }
+
+
+            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(specialKey, specialValue);
+            principal = authenticationManager.authenticate(authRequest);
+
+
+         } catch (Exception e) {
+            e.printStackTrace();
+            // 如果验证失败10次 锁 10分钟
+            if (StringUtils.hasLength(userName)) {
+               if (redisTemplate.hasKey(lockedUser)) {
+                  redisTemplate.opsForValue().increment(lockedUser);
+               } else {
+                  redisTemplate.opsForValue().set(lockedUser, 1, lockTime, TimeUnit.SECONDS);
+               }
+            }
+            throw e;
+         }
       }
 
       try {
@@ -203,7 +218,7 @@ public class AuthService {
                  .roleType(Arrays.asList(userEntity.getType().split(",")))
                  .scope(oauth2ClientEntity.getScopes())
                  .tokenType("bearer")
-                 .username(userName)
+                 .username(userEntity.getUserName())
                  .userId(userEntity.getId())
                  .lastPasswordTime(userEntity.getLastPasswordTime())
                  .build();
