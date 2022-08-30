@@ -46,6 +46,8 @@ public class Oauth2ClientEntity {
     private String clientSecret;
 
     @ApiModelProperty("过期时间，时间戳13位（）")
+    @JsonDeserialize(using = JsonInstantDeserializer.class)
+    @JsonSerialize(using = JsonInstantSerializer.class)
     private Instant clientSecretExpiresAt;
 
     @ApiModelProperty("客户端名称")
@@ -70,6 +72,7 @@ public class Oauth2ClientEntity {
     @ApiModelProperty("范围 eg: message:read,message:write")
     private  Set<String> scope = new HashSet();
 
+    @ApiModelProperty(hidden = true)
     private String scopes;
 
 

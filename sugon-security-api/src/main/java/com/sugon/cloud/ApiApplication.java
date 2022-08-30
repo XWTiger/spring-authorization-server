@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.activation.DataSource;
@@ -26,6 +27,10 @@ import java.net.UnknownHostException;
  */
 @Slf4j
 @EnableSwagger2
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true)
 @SpringBootApplication
 @MapperScan(basePackages = {"com.sugon.cloud.mapper"})
 public class ApiApplication {

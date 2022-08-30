@@ -8,7 +8,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationToken;
@@ -16,7 +15,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -37,7 +35,7 @@ public class AuthorizationFilterConfig {
     }
 
     @Bean
-    @Order(2)
+    @Order(4)
     @SuppressWarnings("unused")
     public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
@@ -58,7 +56,7 @@ public class AuthorizationFilterConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/oauth/token").permitAll()
-                .antMatchers("/api/oauth2/client").permitAll()
+                .antMatchers("/api/salt").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
@@ -69,7 +67,9 @@ public class AuthorizationFilterConfig {
                 )
                 .and()
                 .addFilterBefore(passwordGrantFilter, AbstractPreAuthenticatedProcessingFilter.class)
-
+                .formLogin()
+                .loginPage("/login")
+                .and()
                 .exceptionHandling(exceptions ->
                         exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                 );
@@ -77,22 +77,33 @@ public class AuthorizationFilterConfig {
         return http.build();
     }
 
-   @Bean
-    @Order(1)
-    public SecurityFilterChain whiteList(HttpSecurity http) throws Exception {
+   /*@Bean
+    @Order(3)
+    public void whiteList(HttpSecurity http) throws Exception {
 
-        return http
+         http
                 .authorizeRequests()
                 .antMatchers("/api/salt").permitAll()
                 .and()
-                .csrf()
-                .disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .invalidSessionUrl("/api/salt")
-                .and()
-                .build()
+
+                //.antMatchers("/api/oauth2/client").permitAll()
+
+//                .and()
+//                .csrf()
+//                .disable()
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .invalidSessionUrl("/api/salt")
+//                .and()
+//                .formLogin()
+//                .loginPage("/login")
+//                .successForwardUrl("/doc.html")
+//                .and()
+//                .exceptionHandling(exceptions ->
+//                        exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+//                )
+               // .build()
 
          ;
 
-    }
+    }*/
 }

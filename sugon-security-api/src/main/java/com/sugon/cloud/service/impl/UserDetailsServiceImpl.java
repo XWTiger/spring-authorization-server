@@ -44,12 +44,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public RamUserEntity loadUserByUserName(String userName) {
-        Set<String> keys = redisTemplate.keys(userName + ":*");
-        if (keys.size() > 1) {
-            log.warn("loadUserByUserName : {}, find more than one", userName);
-        }
-        String key = keys.iterator().next();
-        RamUserEntity userEntity = (RamUserEntity) redisTemplate.opsForValue().get(key);
+
+        RamUserEntity userEntity = (RamUserEntity) redisTemplate.opsForValue().get(userName);
         if (Objects.isNull(userEntity)) {
             try {
                 LambdaQueryWrapper queryWrapper = new LambdaQueryWrapper<RamUserEntity>().eq(RamUserEntity::getUserName, userName);
@@ -58,7 +54,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 e.printStackTrace();
             }
             if (Objects.nonNull(userEntity)) {
-                redisTemplate.opsForValue().set(userName + ":" + userEntity.getId(), userEntity);
+                redisTemplate.opsForValue().set(userName, userEntity);
             }
         }
         return userEntity;

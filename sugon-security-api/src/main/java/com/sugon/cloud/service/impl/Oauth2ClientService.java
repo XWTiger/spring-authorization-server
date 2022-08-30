@@ -1,6 +1,7 @@
 package com.sugon.cloud.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sugon.cloud.entity.Oauth2ClientEntity;
 import com.sugon.cloud.enums.AuthorizationGrantTypeEnum;
@@ -63,7 +64,11 @@ public class Oauth2ClientService  implements RegisteredClientRepository{
 
     @Transactional
     public Oauth2ClientEntity create(Oauth2ClientEntity oauth2ClientEntity) throws Exception {
-
+        LambdaQueryWrapper<Oauth2ClientEntity> queryWrapper = new LambdaQueryWrapper<Oauth2ClientEntity>().eq(Oauth2ClientEntity::getClientId, oauth2ClientEntity.getClientId());
+        Oauth2ClientEntity oauth2Client = oauth2ClientMapper.selectOne(queryWrapper);
+        if (Objects.nonNull(oauth2Client)) {
+            throw new Exception("client id 重复");
+        }
         JdbcRegisteredClientRepository registeredClientRepository = new JdbcRegisteredClientRepository(new JdbcTemplate(dataSource));
         String id = UUID.randomUUID().toString();
         RegisteredClient loginClient = RegisteredClient.withId(id)

@@ -70,9 +70,9 @@ public class AuthorizationServerConfig {
    /* private UserDetailsServiceImpl userDetailsServiceImpl;
     private Oauth2ClientService oauth2ClientService;*/
 
-   /* @Bean
+    /*@Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public void authorizationServerSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
         httpSecurity
                 // Redirect to the login page when not authenticated from the
@@ -83,13 +83,13 @@ public class AuthorizationServerConfig {
                                 new LoginUrlAuthenticationEntryPoint("/login"))
                 );
 
-        return httpSecurity.build();
-    }*/
+        //return httpSecurity.build();
+    }
 
 
-   /* @Bean
-    @Order(3)
-    public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
+    @Bean
+    @Order(2)
+    public void standardSecurityFilterChain(HttpSecurity http) throws Exception {
         http
 
                 .authorizeHttpRequests((authorize) -> authorize
@@ -99,7 +99,7 @@ public class AuthorizationServerConfig {
                 // authorization server filter chain
                 .formLogin(Customizer.withDefaults());
 
-        return http.build();
+        //return http.build();
     }*/
 
 

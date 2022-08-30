@@ -55,7 +55,7 @@ public class AuthService {
    private final int FAILED_TIMES = 10;
    private final static String USER_NAME = "comments";
    private final static String NICK_NAME = "lastName";
-   private final static String TOKEN_HEADER = "auth:";
+   public final static String TOKEN_HEADER = "auth:";
    private static final String LOCAL_AUTHORIZATION_URI = "http://localhost:8090/oauth2/authorize";
 
    @Value("${authorization.token-expire:1800}")
@@ -269,5 +269,7 @@ public class AuthService {
       }
       return -1;
    }
+
+
 }
 
